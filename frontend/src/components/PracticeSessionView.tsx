@@ -31,7 +31,6 @@ export function PracticeSessionView({
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   // Audio Recording
-  const [isMicAvailable, setIsMicAvailable] = useState<boolean | null>(null);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -41,6 +40,13 @@ export function PracticeSessionView({
   // Fallback Typed Answer
   const [typedAnswer, setTypedAnswer] = useState("");
   const [isUsingTypedFallback, setIsUsingTypedFallback] = useState(false);
+
+  const stopMediaStream = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+  };
 
   // Initialize session on mount
   useEffect(() => {
@@ -60,9 +66,11 @@ export function PracticeSessionView({
         if (isMounted) {
           setSession(resp.session);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (isMounted) {
-          setErrorMessage(err.message || "Failed to initialize practice session");
+          setErrorMessage(
+            err instanceof Error ? err.message : "Failed to initialize practice session"
+          );
         }
       }
     }
@@ -76,14 +84,6 @@ export function PracticeSessionView({
     };
   }, [question, gameType, authToken, targetDuration]);
 
-  // Clean up media streams
-  const stopMediaStream = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
-    }
-  };
-
   // Start recording
   const startRecording = async () => {
     setErrorMessage(null);
@@ -92,8 +92,6 @@ export function PracticeSessionView({
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
-      setIsMicAvailable(true);
-
       const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
         ? "audio/webm;codecs=opus"
         : "audio/webm";
@@ -128,8 +126,7 @@ export function PracticeSessionView({
           return next;
         });
       }, 1000);
-    } catch (err: any) {
-      setIsMicAvailable(false);
+    } catch {
       setIsUsingTypedFallback(true);
       setErrorMessage("Microphone access unavailable or denied. You can type your answer below instead.");
     }
@@ -182,9 +179,11 @@ export function PracticeSessionView({
       }
 
       onEvaluationComplete(evalResp.result, session);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setSessionState("error");
-      setErrorMessage(err.message || "Failed to transcribe or evaluate audio.");
+      setErrorMessage(
+        err instanceof Error ? err.message : "Failed to transcribe or evaluate audio."
+      );
     }
   };
 
@@ -208,9 +207,9 @@ export function PracticeSessionView({
       }
 
       onEvaluationComplete(evalResp.result, session);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setSessionState("error");
-      setErrorMessage(err.message || "Failed to evaluate answer.");
+      setErrorMessage(err instanceof Error ? err.message : "Failed to evaluate answer.");
     }
   };
 

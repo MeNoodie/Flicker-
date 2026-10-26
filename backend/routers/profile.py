@@ -34,7 +34,10 @@ async def upsert_profile(
     }, on_conflict="id").execute()
 
     if not profile_row.data:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Profile save failed")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Profile save failed",
+        )
 
     # Replace topics: deactivate all, then upsert new ones
     db.table("topics").update({"is_active": False}).eq("user_id", user_id).execute()
@@ -48,7 +51,13 @@ async def upsert_profile(
         }).execute()
 
     # Fetch saved topics
-    topics_row = db.table("topics").select("*").eq("user_id", user_id).eq("is_active", True).execute()
+    topics_row = (
+        db.table("topics")
+        .select("*")
+        .eq("user_id", user_id)
+        .eq("is_active", True)
+        .execute()
+    )
 
     p = profile_row.data[0]
     from backend.schemas.profile import Topic
@@ -89,7 +98,13 @@ async def get_profile(
     if not profile_row.data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
 
-    topics_row = db.table("topics").select("*").eq("user_id", user_id).eq("is_active", True).execute()
+    topics_row = (
+        db.table("topics")
+        .select("*")
+        .eq("user_id", user_id)
+        .eq("is_active", True)
+        .execute()
+    )
     p = profile_row.data[0]
     from backend.schemas.profile import Topic
 
@@ -101,7 +116,12 @@ async def get_profile(
         learning_goal=p["learning_goal"],
         preferred_duration=p["preferred_duration"],
         topics=[
-            Topic(id=t["id"], topic_name=t["topic_name"], difficulty=t["difficulty"], is_active=t["is_active"])
+            Topic(
+                id=t["id"],
+                topic_name=t["topic_name"],
+                difficulty=t["difficulty"],
+                is_active=t["is_active"],
+            )
             for t in (topics_row.data or [])
         ],
         created_at=p.get("created_at"),

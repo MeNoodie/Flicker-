@@ -150,7 +150,7 @@ export function FeedbackDashboard({
                   </div>
 
                   <p className="text-[11px] text-zinc-400 leading-relaxed italic">
-                    "{item.evidence || "Demonstrated baseline understanding."}"
+                    &quot;{item.evidence || "Demonstrated baseline understanding."}&quot;
                   </p>
                 </div>
               );
