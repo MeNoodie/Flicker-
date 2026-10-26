@@ -1,196 +1,207 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import type {
+  EvaluationResult,
+  GeneratedQuestionItem,
+  PracticeSession,
   Profile,
   UserProgress,
-  GeneratedQuestionItem,
-  EvaluationResult,
-  PracticeSession,
-  UpsertProfileRequest,
 } from "@/types";
-import {
-  getProfile,
-  upsertProfile,
-  getProgress,
-  getQuestions,
-} from "@/lib/api";
-import { UserProgressHeader } from "@/components/UserProgressHeader";
-import { TopicSpinner } from "@/components/TopicSpinner";
+import { getAccessToken } from "@/lib/auth";
+import { ApiError, getProfile, getProgress, getQuestions } from "@/lib/api";
+import { FeedbackDashboard } from "@/components/FeedbackDashboard";
 import { MysteryCards } from "@/components/MysteryCards";
 import { PracticeSessionView } from "@/components/PracticeSessionView";
-import { FeedbackDashboard } from "@/components/FeedbackDashboard";
-import { ProfileModal } from "@/components/ProfileModal";
+import { TopicSpinner } from "@/components/TopicSpinner";
+import { UserProgressHeader } from "@/components/UserProgressHeader";
+
+type ActiveGame = "spinner" | "mystery_cards";
 
 export default function SpeakQuestGame() {
-  // Use mock/dev token for local testing and offline fallback
-  const [authToken] = useState<string>("mock-user-123");
-
+  const router = useRouter();
+  const [authToken, setAuthToken] = useState("");
   const [profile, setProfile] = useState<Profile | null>(null);
   const [progress, setProgress] = useState<UserProgress | null>(null);
   const [questions, setQuestions] = useState<GeneratedQuestionItem[]>([]);
-  const [activeGame, setActiveGame] = useState<"spinner" | "mystery_cards">("spinner");
-
-  // Workflow states
+  const [activeGame, setActiveGame] = useState<ActiveGame>("spinner");
   const [selectedQuestion, setSelectedQuestion] = useState<GeneratedQuestionItem | null>(null);
   const [evaluationResult, setEvaluationResult] = useState<EvaluationResult | null>(null);
   const [completedSession, setCompletedSession] = useState<PracticeSession | null>(null);
-
-  // UI state
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [bannerNotice, setBannerNotice] = useState<string | null>(null);
-
-  // Initial data load
-  const loadInitialData = useCallback(async () => {
-    setIsLoadingProfile(true);
-    try {
-      // 1. Load or initialize profile
-      let prof: Profile | null = null;
-      try {
-        prof = await getProfile(authToken);
-      } catch {
-        // Fallback profile if new user
-        prof = await upsertProfile(authToken, {
-          display_name: "Alex Chen",
-          domain: "Distributed Systems & Cloud Architecture",
-          experience_level: "intermediate",
-          learning_goal: "interview_preparation",
-          preferred_duration: 90,
-          user_type: "student",
-          college_year: "3rd_year",
-          institution_name: "Stanford University",
-          major_degree: "Computer Science",
-          topics: [
-            { topic_name: "CAP Theorem & PACELC Tradeoffs", difficulty: "intermediate", is_active: true },
-            { topic_name: "Raft Consensus Algorithm", difficulty: "advanced", is_active: true },
-            { topic_name: "Distributed Caching & Invalidation", difficulty: "intermediate", is_active: true },
-            { topic_name: "Database Sharding & Partitioning", difficulty: "advanced", is_active: true },
-          ],
-        });
-      }
-      setProfile(prof);
-
-      // 2. Load User Progress
-      try {
-        const prog = await getProgress(authToken);
-        setProgress(prog);
-      } catch {
-        setProgress({
-          user_id: "mock-user-123",
-          total_xp: 0,
-          current_streak: 1,
-          completed_sessions: 0,
-          last_practice_date: new Date().toISOString().split("T")[0],
-        });
-      }
-
-      // 3. Load Questions
-      setIsLoadingQuestions(true);
-      const qRes = await getQuestions(authToken, 10, false);
-      setQuestions(qRes.questions);
-    } catch (err: unknown) {
-      console.error("Failed to load initial data:", err);
-      setBannerNotice(err instanceof Error ? err.message : "Error connecting to backend");
-    } finally {
-      setIsLoadingProfile(false);
-      setIsLoadingQuestions(false);
-    }
-  }, [authToken]);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
-    loadInitialData();
-  }, [loadInitialData]);
+    let active = true;
+    async function loadSession() {
+      try {
+        const token = await getAccessToken();
+        if (!token) {
+          router.replace("/login");
+          return;
+        }
+        if (!active) return;
+        const requestedGame = new URLSearchParams(window.location.search).get("mode");
+        if (requestedGame === "mystery_cards" || requestedGame === "spinner") {
+          setActiveGame(requestedGame);
+        }
+        setAuthToken(token);
+      } catch (sessionError) {
+        if (active) {
+          setBannerNotice(sessionError instanceof Error ? sessionError.message : "Could not validate your session.");
+          setIsLoadingProfile(false);
+        }
+      }
+    }
+    void loadSession();
+    return () => {
+      active = false;
+    };
+  }, [router]);
 
-  // Refresh questions handler
+  useEffect(() => {
+    if (!authToken) return;
+    let active = true;
+    async function loadPractice() {
+      try {
+        const savedProfile = await getProfile(authToken);
+        if (!active) return;
+        setProfile(savedProfile);
+        try {
+          const savedProgress = await getProgress(authToken);
+          if (active) setProgress(savedProgress);
+        } catch (progressError) {
+          console.warn("Could not load learning progress:", progressError);
+        }
+        if (!active) return;
+        setIsLoadingQuestions(true);
+        const questionResponse = await getQuestions(authToken, 10, false);
+        if (active) setQuestions(questionResponse.questions);
+      } catch (loadError) {
+        if (!active) return;
+        if (loadError instanceof ApiError && loadError.status === 404) {
+          router.replace("/profile?setup=1");
+        } else {
+          setBannerNotice(loadError instanceof Error ? loadError.message : "Could not load practice data.");
+        }
+      } finally {
+        if (active) {
+          setIsLoadingProfile(false);
+          setIsLoadingQuestions(false);
+        }
+      }
+    }
+    void loadPractice();
+    return () => {
+      active = false;
+    };
+  }, [authToken, reloadKey, router]);
+
   const handleRefreshQuestions = async () => {
+    if (!authToken) return;
     setIsLoadingQuestions(true);
     try {
-      const qRes = await getQuestions(authToken, 10, true);
-      setQuestions(qRes.questions);
-      setBannerNotice("✨ Generated fresh personalized questions!");
-      setTimeout(() => setBannerNotice(null), 3000);
-    } catch (err: unknown) {
-      setBannerNotice(err instanceof Error ? err.message : "Failed to refresh questions");
+      const questionResponse = await getQuestions(authToken, 10, true);
+      setQuestions(questionResponse.questions);
+      setBannerNotice("Fresh personalized questions are ready.");
+      window.setTimeout(() => setBannerNotice(null), 3000);
+    } catch (refreshError) {
+      setBannerNotice(refreshError instanceof Error ? refreshError.message : "Failed to refresh questions.");
     } finally {
       setIsLoadingQuestions(false);
     }
   };
 
-  // Handle saving profile changes from modal
-  const handleSaveProfile = async (updated: UpsertProfileRequest) => {
-    const saved = await upsertProfile(authToken, updated);
-    setProfile(saved);
-    // Refresh questions so AI agent adopts the new persona/topics
-    await handleRefreshQuestions();
-  };
-
-  // Callback when evaluation finishes in PracticeSessionView
   const handleEvaluationComplete = async (
     result: EvaluationResult,
     session: PracticeSession
   ) => {
     setEvaluationResult(result);
     setCompletedSession(session);
-
-    // Refresh progress to display updated XP and streak
     try {
-      const prog = await getProgress(authToken);
-      setProgress(prog);
-    } catch (e) {
-      console.warn("Could not reload progress:", e);
+      setProgress(await getProgress(authToken));
+    } catch (progressError) {
+      console.warn("Could not reload learning progress:", progressError);
     }
   };
 
-  // Reset to game board for next challenge
   const handleNextChallenge = () => {
     setEvaluationResult(null);
     setCompletedSession(null);
     setSelectedQuestion(null);
   };
 
-  // Retry the exact same question
   const handleRetryQuestion = () => {
     setEvaluationResult(null);
     setCompletedSession(null);
-    // Keep selectedQuestion so PracticeSessionView re-mounts
   };
 
   if (isLoadingProfile) {
     return (
-      <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center space-y-4">
-        <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-zinc-400 font-medium text-sm animate-pulse">
-          Connecting to SpeakQuest AI & calibrating profile...
-        </p>
-      </div>
+      <main className="grid min-h-screen place-items-center bg-[#050b17] text-slate-300">
+        <div className="text-center">
+          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-violet-400/30 border-t-violet-300" />
+          <p className="mt-4 text-sm">Getting your practice ready…</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-[#050b17] px-5 text-white">
+        <section className="max-w-md rounded-2xl border border-white/10 bg-[#0b1425] p-7">
+          <h1 className="text-lg font-bold">Practice is temporarily unavailable</h1>
+          <p role="alert" className="mt-2 text-sm leading-6 text-slate-300">{bannerNotice ?? "We could not load your learner profile."}</p>
+          <div className="mt-5 flex gap-3">
+            <button
+              onClick={() => {
+                setBannerNotice(null);
+                setIsLoadingProfile(true);
+                setReloadKey((key) => key + 1);
+              }}
+              className="rounded-xl bg-violet-600 px-4 py-2 text-sm font-semibold"
+            >
+              Try again
+            </button>
+            <Link href="/dashboard" className="rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold">Dashboard</Link>
+          </div>
+        </section>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans selection:bg-amber-500/30 selection:text-amber-200">
-      {/* Sticky Header with XP, Streak & Game Tabs */}
+    <main className="flex min-h-screen flex-col bg-[#050b17] text-slate-100">
       <UserProgressHeader
         profile={profile}
         progress={progress}
-        onOpenProfile={() => setIsProfileModalOpen(true)}
+        onOpenProfile={() => router.push("/profile")}
         activeGame={activeGame}
-        onSelectGame={(g) => {
-          if (!selectedQuestion) setActiveGame(g);
+        onSelectGame={(game) => {
+          if (!selectedQuestion) {
+            setActiveGame(game);
+            router.replace(`/game?mode=${game}`);
+          }
         }}
       />
-
-      {/* Temporary Toast Banner */}
+      <div className="border-b border-white/10 bg-[#081120]">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2.5 sm:px-6">
+          <Link href="/dashboard" className="text-xs font-semibold text-slate-400 transition hover:text-white">← Dashboard</Link>
+          <span className="text-xs text-slate-500">Practice · Speak · Improve</span>
+          <Link href="/profile" className="text-xs font-semibold text-violet-300 transition hover:text-violet-200">Edit profile</Link>
+        </div>
+      </div>
       {bannerNotice && (
-        <div className="w-full bg-amber-500/10 border-b border-amber-500/20 py-2 px-4 text-center text-xs text-amber-300 font-semibold animate-fade-in">
+        <div role="status" className="border-b border-violet-300/10 bg-violet-400/10 px-4 py-2 text-center text-xs font-semibold text-violet-100">
           {bannerNotice}
         </div>
       )}
-
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
-        {/* Step 1: Active Evaluation Feedback View */}
+      <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-4 py-8 sm:px-6">
         {evaluationResult && completedSession ? (
           <FeedbackDashboard
             result={evaluationResult}
@@ -199,8 +210,8 @@ export default function SpeakQuestGame() {
             onRetry={handleRetryQuestion}
           />
         ) : selectedQuestion ? (
-          /* Step 2: Active Practice Session with Audio & Fallback */
           <PracticeSessionView
+            key={`${selectedQuestion.id}-${evaluationResult ? "retry" : "first"}`}
             question={selectedQuestion}
             gameType={activeGame}
             authToken={authToken}
@@ -208,50 +219,41 @@ export default function SpeakQuestGame() {
             onCancel={() => setSelectedQuestion(null)}
           />
         ) : (
-          /* Step 3: Game Selection (Spinner or Mystery Cards) */
-          <div className="py-6 space-y-8 animate-fade-in">
-            {/* Hero / Game Mode Overview */}
-            <div className="text-center max-w-2xl mx-auto space-y-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-zinc-900 border border-zinc-800 text-amber-400">
-                ⚡ Interactive AI Speaking Practice
+          <div className="py-4">
+            <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-300">Your next challenge</p>
+                <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+                  {activeGame === "spinner" ? "Spin to speak." : "Choose a mystery card."}
+                </h1>
+                <p className="mt-2 text-sm text-slate-400">
+                  {activeGame === "spinner"
+                    ? "Spin the wheel to get a speaking prompt tailored to your topics."
+                    : "Pick a face-down card and explain the topic it reveals."}
+                </p>
+              </div>
+              <span className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-slate-300">
+                {profile.domain} · {profile.experience_level}
               </span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-                {activeGame === "spinner" ? "Spin to Speak" : "Mystery Knowledge Cards"}
-              </h2>
-              <p className="text-sm text-zinc-400">
-                {activeGame === "spinner"
-                  ? "Spin the wheel to land on an AI-curated question tailored to your persona."
-                  : "Choose a face-down card to test your domain reflexes under pressure."}
-              </p>
             </div>
-
-            {/* Game Canvas */}
             {activeGame === "spinner" ? (
               <TopicSpinner
                 questions={questions}
-                onSelectQuestion={(q) => setSelectedQuestion(q)}
+                onSelectQuestion={setSelectedQuestion}
                 isLoading={isLoadingQuestions}
                 onRefreshQuestions={handleRefreshQuestions}
               />
             ) : (
               <MysteryCards
                 questions={questions}
-                onSelectQuestion={(q) => setSelectedQuestion(q)}
+                onSelectQuestion={setSelectedQuestion}
                 isLoading={isLoadingQuestions}
                 onRefreshQuestions={handleRefreshQuestions}
               />
             )}
           </div>
         )}
-      </main>
-
-      {/* Profile & Custom Topics Modal */}
-      <ProfileModal
-        isOpen={isProfileModalOpen}
-        profile={profile}
-        onClose={() => setIsProfileModalOpen(false)}
-        onSave={handleSaveProfile}
-      />
-    </div>
+      </section>
+    </main>
   );
 }

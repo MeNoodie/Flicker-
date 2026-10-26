@@ -84,13 +84,13 @@ async def get_profile(
 
     db = get_service_client(cfg)
     profile_row = (
-        db.table("profiles").select("*").eq("id", user_id).single().execute()
+        db.table("profiles").select("*").eq("id", user_id).limit(1).execute()
     )
     if not profile_row.data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
 
     topics_row = db.table("topics").select("*").eq("user_id", user_id).eq("is_active", True).execute()
-    p = profile_row.data
+    p = profile_row.data[0]
     from backend.schemas.profile import Topic
 
     return Profile(
