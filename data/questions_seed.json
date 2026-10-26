@@ -1,0 +1,137 @@
+[
+  {
+    "id": "q-ml-001",
+    "domain": "Machine Learning",
+    "topic": "Neural Networks",
+    "difficulty": "intermediate",
+    "question_text": "Explain how backpropagation works in a neural network.",
+    "expected_concepts": [
+      "forward pass computes predictions",
+      "loss function measures error",
+      "chain rule for gradient computation",
+      "gradient descent updates weights",
+      "learning rate controls step size"
+    ],
+    "evaluation_hints": "Look for understanding of the chain rule, gradient flow direction (output to input), and the role of the loss function."
+  },
+  {
+    "id": "q-ml-002",
+    "domain": "Machine Learning",
+    "topic": "Neural Networks",
+    "difficulty": "beginner",
+    "question_text": "What is overfitting in machine learning and how do you prevent it?",
+    "expected_concepts": [
+      "model memorizes training data",
+      "poor generalization to new data",
+      "regularization techniques (L1, L2, dropout)",
+      "train/validation/test split",
+      "early stopping"
+    ],
+    "evaluation_hints": "Key insight: overfitting means low training error but high test error. Prevention strategies should be specific and accurate."
+  },
+  {
+    "id": "q-ml-003",
+    "domain": "Machine Learning",
+    "topic": "Transformers",
+    "difficulty": "intermediate",
+    "question_text": "What is the attention mechanism in transformers and why is it important?",
+    "expected_concepts": [
+      "query, key, value matrices",
+      "attention scores via dot product",
+      "softmax normalization",
+      "context-aware representations",
+      "parallelization advantage over RNNs"
+    ],
+    "evaluation_hints": "Self-attention allows each token to attend to all others. Multi-head attention captures different relationship types simultaneously."
+  },
+  {
+    "id": "q-ml-004",
+    "domain": "Machine Learning",
+    "topic": "Gradient Descent",
+    "difficulty": "beginner",
+    "question_text": "Explain the difference between batch gradient descent, stochastic gradient descent, and mini-batch gradient descent.",
+    "expected_concepts": [
+      "batch uses entire dataset per update",
+      "SGD uses one sample per update",
+      "mini-batch uses a subset",
+      "trade-off between noise and convergence speed",
+      "mini-batch is the practical standard"
+    ],
+    "evaluation_hints": "Focus on memory implications, convergence noise, and why mini-batch is the practical choice."
+  },
+  {
+    "id": "q-web-001",
+    "domain": "Web Development",
+    "topic": "React",
+    "difficulty": "intermediate",
+    "question_text": "Explain how React's virtual DOM works and why it improves performance.",
+    "expected_concepts": [
+      "virtual DOM is an in-memory representation",
+      "diffing algorithm compares old and new trees",
+      "only changed nodes are updated in real DOM",
+      "batching updates reduces reflows",
+      "reconciliation process"
+    ],
+    "evaluation_hints": "The key insight is that real DOM manipulation is expensive; the virtual DOM minimizes it through diffing and batching."
+  },
+  {
+    "id": "q-web-002",
+    "domain": "Web Development",
+    "topic": "HTTP",
+    "difficulty": "beginner",
+    "question_text": "What is the difference between HTTP GET and POST requests?",
+    "expected_concepts": [
+      "GET retrieves data, POST sends data",
+      "GET parameters in URL, POST in body",
+      "GET is idempotent, POST is not",
+      "GET can be cached, POST generally cannot",
+      "security implications of URL-visible parameters"
+    ],
+    "evaluation_hints": "Idempotency is a key conceptual distinction. Caching and URL visibility are practical differences."
+  },
+  {
+    "id": "q-web-003",
+    "domain": "Web Development",
+    "topic": "Next.js",
+    "difficulty": "intermediate",
+    "question_text": "Explain the difference between Server-Side Rendering (SSR) and Static Site Generation (SSG) in Next.js.",
+    "expected_concepts": [
+      "SSR renders on each request",
+      "SSG pre-renders at build time",
+      "SSR: always fresh data, higher server cost",
+      "SSG: fast delivery via CDN, stale data risk",
+      "ISR as a hybrid approach"
+    ],
+    "evaluation_hints": "The core trade-off is data freshness vs. performance/cost. ISR (Incremental Static Regeneration) bridges the gap."
+  },
+  {
+    "id": "q-ds-001",
+    "domain": "Data Science",
+    "topic": "Statistics",
+    "difficulty": "beginner",
+    "question_text": "What is the difference between correlation and causation? Give an example.",
+    "expected_concepts": [
+      "correlation: two variables move together",
+      "causation: one variable causes the other",
+      "correlation does not imply causation",
+      "confounding variables",
+      "experiments vs. observational studies"
+    ],
+    "evaluation_hints": "A classic example: ice cream sales correlate with drowning rates (confound: hot weather). Experiments with random assignment establish causation."
+  },
+  {
+    "id": "q-ds-002",
+    "domain": "Data Science",
+    "topic": "Databases",
+    "difficulty": "intermediate",
+    "question_text": "Explain the difference between SQL and NoSQL databases and when you would choose each.",
+    "expected_concepts": [
+      "SQL: structured, relational, ACID",
+      "NoSQL: flexible schema, horizontal scaling",
+      "SQL for complex joins and transactions",
+      "NoSQL for high write throughput or varied data shapes",
+      "CAP theorem trade-offs"
+    ],
+    "evaluation_hints": "The choice depends on data structure predictability, consistency requirements, and scale. Neither is universally better."
+  }
+]

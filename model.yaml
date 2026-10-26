@@ -1,0 +1,81 @@
+# model.yaml — SpeakQuest AI Provider Configuration
+# ─────────────────────────────────────────────────────────────────────────────
+# Primary LLM  : Gemma via Google AI Studio
+# Fallback LLM : Gemma local via Ollama  (auto-switch on connection/rate errors)
+# STT          : Groq Whisper
+# ─────────────────────────────────────────────────────────────────────────────
+
+llm:
+  primary:
+    provider: google_genai          # langchain-google-genai
+    model: gemma-3-12b-it           # or gemma-3-27b-it — set via GEMMA_MODEL env
+    temperature: 0.2
+    max_tokens: 2048
+    timeout_seconds: 30
+
+  fallback:
+    provider: ollama                # langchain-ollama  (no API key needed)
+    model: gemma-local:latest       # local Gemma model in Ollama
+    base_url: http://localhost:11434
+    temperature: 0.2
+    max_tokens: 2048
+    timeout_seconds: 60             # local model — allow more time
+
+  retry:
+    max_attempts: 2                 # 1 primary attempt + 1 fallback attempt
+    fallback_on_errors:
+      - "ConnectionError"
+      - "TimeoutError"
+      - "RateLimitError"
+      - "ServiceUnavailableError"
+      - "APIStatusError"
+
+stt:
+  provider: groq
+  model: whisper-large-v3-turbo     # fast + accurate; switch to whisper-large-v3 for max accuracy
+  language: en                      # set to null for auto-detect
+  max_file_size_mb: 25
+  supported_formats:
+    - webm
+    - mp4
+    - wav
+    - mp3
+    - m4a
+  response_format: verbose_json     # includes timestamps and language metadata
+
+evaluation:
+  rubric:
+    dimensions:
+      - name: conceptual_accuracy
+        weight: 0.30
+        description: "Correctness, misconceptions, factual errors"
+      - name: concept_clarity
+        weight: 0.20
+        description: "Understandability and precise explanation"
+      - name: depth_of_understanding
+        weight: 0.20
+        description: "Mechanism, reasoning, why/how, limitations"
+      - name: technical_precision
+        weight: 0.15
+        description: "Correct use of terminology and technical distinctions"
+      - name: structure_and_reasoning
+        weight: 0.10
+        description: "Logical order, coherence, cause and effect"
+      - name: relevance
+        weight: 0.05
+        description: "Whether the answer addresses the question"
+    score_range:
+      min: 0
+      max: 5
+    min_transcript_words: 10       # below this threshold → needs_retry=true
+
+  xp:
+    base_award: 50                  # XP for a completed, valid evaluation
+    streak_bonus: 10                # additional XP per streak day (phase 2)
+    min_overall_score_for_xp: 10    # overall score out of 100; below → no XP
+
+recording:
+  default_duration_seconds: 90
+  allowed_durations: [60, 90, 120]
+  hard_max_seconds: 180             # server-side rejection above this
+  max_upload_bytes: 26214400        # 25 MB

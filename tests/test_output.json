@@ -1,0 +1,457 @@
+{
+  "student_scenario": {
+    "profile": {
+      "id": "f81a9ab5-5930-4397-a702-0ff48efa0801",
+      "display_name": "Amina Al-Mansoor",
+      "domain": "Generative AI & LLM Systems",
+      "experience_level": "beginner",
+      "learning_goal": "communication_practice",
+      "preferred_duration": 90,
+      "user_type": "student",
+      "college_year": "2nd_year",
+      "institution_name": "Carnegie Mellon University",
+      "major_degree": "Information Technology",
+      "years_of_experience": null,
+      "current_role": null,
+      "target_role": null,
+      "topics": [],
+      "created_at": null,
+      "updated_at": null
+    },
+    "topics": [
+      {
+        "id": "top_1",
+        "topic_name": "The Transformer Architecture: From Attention to Sequence Generation",
+        "difficulty": "intermediate",
+        "key_focus_areas": [
+          "Self-Attention Mechanism",
+          "Encoder-Decoder vs. Decoder-Only Architectures",
+          "Tokenization and Embeddings"
+        ],
+        "description": "Understanding the core mechanism of the Transformer is crucial for grasping how modern LLMs process language and generating coherent output."
+      },
+      {
+        "id": "top_2",
+        "topic_name": "Prompt Engineering and Context Management",
+        "difficulty": "beginner",
+        "key_focus_areas": [
+          "Zero-shot, Few-shot, and Chain-of-Thought (CoT) Prompting",
+          "Context Window Limitations",
+          "Prompt Injection and Security Basics"
+        ],
+        "description": "This topic evaluates the candidate's ability to effectively communicate with LLMs and manage the context necessary for practical application development."
+      },
+      {
+        "id": "top_3",
+        "topic_name": "Retrieval-Augmented Generation (RAG) System Design",
+        "difficulty": "intermediate",
+        "key_focus_areas": [
+          "Vector Databases and Embeddings",
+          "Indexing Strategies (Chunking)",
+          "Trade-offs between Retrieval Accuracy and Latency"
+        ],
+        "description": "RAG is a critical system pattern; this tests the candidate's intuition on how to ground LLMs in proprietary data effectively."
+      },
+      {
+        "id": "top_4",
+        "topic_name": "LLM Evaluation, Hallucination, and Bias Mitigation",
+        "difficulty": "beginner",
+        "key_focus_areas": [
+          "Metrics for Text Generation Quality (e.g., BLEU, ROUGE)",
+          "Identifying and Mitigating Model Bias",
+          "Strategies for Reducing Hallucinations"
+        ],
+        "description": "This assesses the candidate's awareness of the real-world limitations and ethical considerations necessary for responsible AI development."
+      }
+    ],
+    "questions": [
+      {
+        "id": "q_01",
+        "topic": "The Transformer Architecture",
+        "game_type": "concept_clarity",
+        "difficulty": "intermediate",
+        "question": "Can you explain the core mechanism of the Self-Attention mechanism in a Transformer? Describe what the Query, Key, and Value vectors represent and how they collectively allow the model to weigh the importance of different words in a sequence.",
+        "reference_concepts": [
+          "Self-Attention",
+          "Query-Key-Value mechanism",
+          "Scaled Dot-Product Attention",
+          "Attention Head"
+        ],
+        "suggested_duration_seconds": 90,
+        "hint": "Focus on the 'why' (contextual understanding) and the mathematical intuition behind the attention score calculation."
+      },
+      {
+        "id": "q_02",
+        "topic": "Prompt Engineering and Context Management",
+        "game_type": "elevator_pitch",
+        "difficulty": "beginner",
+        "question": "Imagine you need an LLM to summarize a complex technical document. How would you structure a prompt to ensure the output is accurate, concise, and adheres to a specific format? Give me a quick example of a good prompt structure.",
+        "reference_concepts": [
+          "Zero-shot prompting",
+          "Few-shot prompting",
+          "Role assignment",
+          "Output formatting constraints"
+        ],
+        "suggested_duration_seconds": 60,
+        "hint": "Focus on the structure: Role, Task, Context, Format. Emphasize clarity over complexity."
+      },
+      {
+        "id": "q_03",
+        "topic": "LLM Evaluation, Hallucination, and Bias Mitigation",
+        "game_type": "concept_clarity",
+        "difficulty": "beginner",
+        "question": "What is 'hallucination' in the context of LLMs, and what is one simple, practical technique you could use to try and mitigate it when using a model for factual summarization?",
+        "reference_concepts": [
+          "Hallucination",
+          "Grounding",
+          "Fact-checking",
+          "Temperature parameter"
+        ],
+        "suggested_duration_seconds": 60,
+        "hint": "Define the problem clearly, and then propose a concrete, actionable solution."
+      },
+      {
+        "id": "q_04",
+        "topic": "Retrieval-Augmented Generation (RAG) System Design",
+        "game_type": "technical_deep_dive",
+        "difficulty": "intermediate",
+        "question": "Walk me through the high-level architecture of a Retrieval-Augmented Generation (RAG) system. Specifically, describe the flow from a user query to the final generated answer, highlighting the role of the vector database.",
+        "reference_concepts": [
+          "Retrieval",
+          "Vector Embeddings",
+          "Vector Database",
+          "Context Injection"
+        ],
+        "suggested_duration_seconds": 120,
+        "hint": "Focus on the three main stages: Indexing, Retrieval, and Generation. Explain *why* vector search is necessary."
+      },
+      {
+        "id": "q_05",
+        "topic": "The Transformer Architecture",
+        "game_type": "scenario_defense",
+        "difficulty": "intermediate",
+        "question": "If you were optimizing a Transformer model for a very long sequence (e.g., a long document), what is one potential bottleneck in the standard self-attention mechanism, and how might you conceptually address it?",
+        "reference_concepts": [
+          "Quadratic Complexity",
+          "Long-range dependencies",
+          "Sparse Attention",
+          "Efficient Attention Mechanisms"
+        ],
+        "suggested_duration_seconds": 90,
+        "hint": "Identify the $O(n^2)$ complexity issue and suggest a conceptual solution (e.g., sparse attention or local attention)."
+      },
+      {
+        "id": "q_06",
+        "topic": "Prompt Engineering and Context Management",
+        "game_type": "technical_deep_dive",
+        "difficulty": "beginner",
+        "question": "Explain the concept of 'context window' in LLMs. Why is the size of the context window a critical constraint when designing an application that uses an LLM?",
+        "reference_concepts": [
+          "Context Window Size",
+          "Token Limits",
+          "Context Overflow",
+          "Context Window Management"
+        ],
+        "suggested_duration_seconds": 75,
+        "hint": "Define the limit and explain the consequence of exceeding it (loss of information or cost)."
+      },
+      {
+        "id": "q_07",
+        "topic": "RAG System Design",
+        "game_type": "scenario_defense",
+        "difficulty": "intermediate",
+        "question": "In a RAG system, you have two sources of information: a knowledge base and the user's query. If the retrieval step returns irrelevant documents, what are two different strategies you could employ to improve the retrieval quality before passing the context to the LLM?",
+        "reference_concepts": [
+          "Re-ranking",
+          "Query Rewriting",
+          "Chunking Strategy",
+          "Hybrid Search"
+        ],
+        "suggested_duration_seconds": 120,
+        "hint": "Focus on improving the input quality, not just the generation step."
+      },
+      {
+        "id": "q_08",
+        "topic": "LLM Evaluation, Hallucination, and Bias Mitigation",
+        "game_type": "concept_clarity",
+        "difficulty": "beginner",
+        "question": "When evaluating an LLM's output, what is the difference between 'precision' and 'recall' in the context of information retrieval, and why are both metrics important when assessing a generative model?",
+        "reference_concepts": [
+          "Precision vs. Recall",
+          "BLEU Score",
+          "Human Evaluation",
+          "Factual Accuracy"
+        ],
+        "suggested_duration_seconds": 90,
+        "hint": "Use a simple analogy to distinguish between finding relevant items (recall) and ensuring those items are correct (precision)."
+      },
+      {
+        "id": "q_09",
+        "topic": "Prompt Engineering and Context Management",
+        "game_type": "technical_deep_dive",
+        "difficulty": "beginner",
+        "question": "In the context of Prompt Engineering and Context Management, how would you approach diagnosing and resolving a severe performance or reliability bottleneck?",
+        "reference_concepts": [
+          "bottleneck identification",
+          "metrics/monitoring",
+          "mitigation strategy"
+        ],
+        "suggested_duration_seconds": 90,
+        "hint": "Break your answer into: 1) Detection, 2) Root cause isolation, 3) Actionable resolution."
+      },
+      {
+        "id": "q_10",
+        "topic": "Retrieval-Augmented Generation (RAG) System Design",
+        "game_type": "technical_deep_dive",
+        "difficulty": "intermediate",
+        "question": "In the context of Retrieval-Augmented Generation (RAG) System Design, how would you approach diagnosing and resolving a severe performance or reliability bottleneck?",
+        "reference_concepts": [
+          "bottleneck identification",
+          "metrics/monitoring",
+          "mitigation strategy"
+        ],
+        "suggested_duration_seconds": 90,
+        "hint": "Break your answer into: 1) Detection, 2) Root cause isolation, 3) Actionable resolution."
+      }
+    ]
+  },
+  "professional_scenario": {
+    "profile": {
+      "id": "8e02ef14-36d5-41d4-bd4c-e08a9c1858ee",
+      "display_name": "Jordan Lee",
+      "domain": "Database Internals & Storage Engines",
+      "experience_level": "beginner",
+      "learning_goal": "communication_practice",
+      "preferred_duration": 90,
+      "user_type": "professional",
+      "college_year": null,
+      "institution_name": null,
+      "major_degree": null,
+      "years_of_experience": 1.5,
+      "current_role": "Junior Backend Developer",
+      "target_role": "Mid-Level Distributed Systems Engineer",
+      "topics": [
+        {
+          "id": null,
+          "topic_name": "Kafka Partition Rebalancing & Consumer Lag",
+          "difficulty": "advanced",
+          "is_active": true
+        },
+        {
+          "id": null,
+          "topic_name": "gRPC vs REST Microservices Architecture",
+          "difficulty": "intermediate",
+          "is_active": true
+        },
+        {
+          "id": null,
+          "topic_name": "Distributed Caching & Cache Invalidation",
+          "difficulty": "intermediate",
+          "is_active": true
+        },
+        {
+          "id": null,
+          "topic_name": "Zero-Downtime Database Migration Strategies",
+          "difficulty": "advanced",
+          "is_active": true
+        }
+      ],
+      "created_at": null,
+      "updated_at": null
+    },
+    "topics": [
+      {
+        "id": "user_top_1",
+        "topic_name": "Kafka Partition Rebalancing & Consumer Lag",
+        "difficulty": "advanced",
+        "key_focus_areas": [
+          "Kafka Partition Rebalancing & Consumer Lag"
+        ],
+        "description": "User-specified custom topic from UI"
+      },
+      {
+        "id": "user_top_2",
+        "topic_name": "gRPC vs REST Microservices Architecture",
+        "difficulty": "intermediate",
+        "key_focus_areas": [
+          "gRPC vs REST Microservices Architecture"
+        ],
+        "description": "User-specified custom topic from UI"
+      },
+      {
+        "id": "user_top_3",
+        "topic_name": "Distributed Caching & Cache Invalidation",
+        "difficulty": "intermediate",
+        "key_focus_areas": [
+          "Distributed Caching & Cache Invalidation"
+        ],
+        "description": "User-specified custom topic from UI"
+      },
+      {
+        "id": "user_top_4",
+        "topic_name": "Zero-Downtime Database Migration Strategies",
+        "difficulty": "advanced",
+        "key_focus_areas": [
+          "Zero-Downtime Database Migration Strategies"
+        ],
+        "description": "User-specified custom topic from UI"
+      }
+    ],
+    "questions": [
+      {
+        "id": "q_01",
+        "topic": "Kafka Partition Rebalancing & Consumer Lag",
+        "game_type": "technical_deep_dive",
+        "difficulty": "advanced",
+        "question": "Describe the mechanics of Kafka partition rebalancing. If you observe significant consumer lag on a specific partition, walk me through the diagnostic steps you would take to determine if the issue is network latency, consumer processing bottleneck, or partition assignment imbalance. What metrics are critical?",
+        "reference_concepts": [
+          "Consumer Group Protocol",
+          "Partition Leader Election",
+          "Consumer Lag Metrics",
+          "Rebalance Protocol (e.g., Raft/ZooKeeper)",
+          "Consumer Throughput"
+        ],
+        "suggested_duration_seconds": 120,
+        "hint": "Structure your answer by first explaining the mechanism, then diagnosing the lag, and finally proposing solutions."
+      },
+      {
+        "id": "q_02",
+        "topic": "gRPC vs REST Microservices Architecture",
+        "game_type": "concept_clarity",
+        "difficulty": "intermediate",
+        "question": "When designing a high-throughput internal microservice communication layer, how would you justify choosing gRPC over traditional REST/JSON? Focus your answer on the trade-offs concerning payload size, serialization efficiency, and the architectural implications for service discovery.",
+        "reference_concepts": [
+          "Protocol Buffers (Serialization)",
+          "HTTP/2 vs HTTP/1.1",
+          "Contract Definition (IDL)",
+          "Streaming vs Request/Response",
+          "Latency vs Overhead"
+        ],
+        "suggested_duration_seconds": 90,
+        "hint": "Focus on the underlying transport and serialization differences, not just the surface-level API calls."
+      },
+      {
+        "id": "q_03",
+        "topic": "Distributed Caching & Cache Invalidation",
+        "game_type": "scenario_defense",
+        "difficulty": "intermediate",
+        "question": "You are designing a system where a frequently accessed user profile is stored in a distributed cache (like Redis). Describe a robust strategy for cache invalidation. Specifically, how do you handle the trade-off between eventual consistency and strict consistency, and what mechanisms would you use to prevent stale data from being served?",
+        "reference_concepts": [
+          "Cache-Aside Pattern",
+          "Write-Through/Write-Back",
+          "Time-To-Live (TTL)",
+          "Cache Stampede Prevention",
+          "Cache Consistency Models"
+        ],
+        "suggested_duration_seconds": 100,
+        "hint": "Discuss specific patterns (like Write-Through) and the consistency trade-offs involved in a distributed environment."
+      },
+      {
+        "id": "q_04",
+        "topic": "Zero-Downtime Database Migration Strategies",
+        "game_type": "technical_deep_dive",
+        "difficulty": "advanced",
+        "question": "Explain the principles behind a zero-downtime database migration strategy. Detail a specific, real-world technique (e.g., dual-writing or shadow tables) you would implement to migrate a critical schema change, focusing on how you ensure backward compatibility and handle the rollback scenario gracefully.",
+        "reference_concepts": [
+          "Expand/Contract Pattern",
+          "Dual Writes",
+          "Versioned Schemas",
+          "Read/Write Splitting",
+          "Data Synchronization"
+        ],
+        "suggested_duration_seconds": 120,
+        "hint": "Focus on the phased approach: deployment, data migration, and rollback safety."
+      },
+      {
+        "id": "q_05",
+        "topic": "Kafka Partition Rebalancing & Consumer Lag",
+        "game_type": "concept_clarity",
+        "difficulty": "advanced",
+        "question": "Explain the concept of consumer lag in Kafka. Beyond just monitoring the lag number, what are the underlying causes that lead to lag, and how does the partition rebalancing process interact with these causes to affect overall system throughput?",
+        "reference_concepts": [
+          "Consumer Offset Management",
+          "Broker Throughput Limits",
+          "Consumer Parallelism",
+          "Broker Load Balancing",
+          "Consumer Commit Strategy"
+        ],
+        "suggested_duration_seconds": 90,
+        "hint": "Connect the operational metric (lag) directly to the underlying distributed system mechanics (rebalancing and throughput)."
+      },
+      {
+        "id": "q_06",
+        "topic": "gRPC vs REST Microservices Architecture",
+        "game_type": "elevator_pitch",
+        "difficulty": "intermediate",
+        "question": "Give me a 60-second elevator pitch comparing gRPC and REST for an internal service-to-service communication path. Highlight the primary advantages of one over the other in a high-volume, low-latency environment.",
+        "reference_concepts": [
+          "Serialization Efficiency",
+          "HTTP/2 Multiplexing",
+          "Contract Enforcement",
+          "Service Mesh Integration",
+          "Payload Overhead"
+        ],
+        "suggested_duration_seconds": 60,
+        "hint": "Be concise. Focus on the 'why'\u2014why choose one over the other for performance."
+      },
+      {
+        "id": "q_07",
+        "topic": "Distributed Caching & Cache Invalidation",
+        "game_type": "technical_deep_dive",
+        "difficulty": "intermediate",
+        "question": "Describe a scenario where a simple TTL-based cache invalidation fails. How would you architect a system using a more sophisticated invalidation mechanism, such as a publish/subscribe pattern, to ensure data consistency across multiple distributed caches?",
+        "reference_concepts": [
+          "Pub/Sub Messaging (e.g., Redis Pub/Sub)",
+          "Cache-Aside Pattern",
+          "Cache Stampede Mitigation",
+          "Eventual Consistency",
+          "Cache Coherency"
+        ],
+        "suggested_duration_seconds": 100,
+        "hint": "Focus on moving beyond simple time-based expiry to event-driven updates."
+      },
+      {
+        "id": "q_08",
+        "topic": "Kafka Partition Rebalancing & Consumer Lag",
+        "game_type": "technical_deep_dive",
+        "difficulty": "advanced",
+        "question": "In the context of Kafka Partition Rebalancing & Consumer Lag, how would you approach diagnosing and resolving a severe performance or reliability bottleneck?",
+        "reference_concepts": [
+          "bottleneck identification",
+          "metrics/monitoring",
+          "mitigation strategy"
+        ],
+        "suggested_duration_seconds": 90,
+        "hint": "Break your answer into: 1) Detection, 2) Root cause isolation, 3) Actionable resolution."
+      },
+      {
+        "id": "q_09",
+        "topic": "gRPC vs REST Microservices Architecture",
+        "game_type": "technical_deep_dive",
+        "difficulty": "intermediate",
+        "question": "In the context of gRPC vs REST Microservices Architecture, how would you approach diagnosing and resolving a severe performance or reliability bottleneck?",
+        "reference_concepts": [
+          "bottleneck identification",
+          "metrics/monitoring",
+          "mitigation strategy"
+        ],
+        "suggested_duration_seconds": 90,
+        "hint": "Break your answer into: 1) Detection, 2) Root cause isolation, 3) Actionable resolution."
+      },
+      {
+        "id": "q_10",
+        "topic": "Distributed Caching & Cache Invalidation",
+        "game_type": "technical_deep_dive",
+        "difficulty": "intermediate",
+        "question": "In the context of Distributed Caching & Cache Invalidation, how would you approach diagnosing and resolving a severe performance or reliability bottleneck?",
+        "reference_concepts": [
+          "bottleneck identification",
+          "metrics/monitoring",
+          "mitigation strategy"
+        ],
+        "suggested_duration_seconds": 90,
+        "hint": "Break your answer into: 1) Detection, 2) Root cause isolation, 3) Actionable resolution."
+      }
+    ]
+  }
+}

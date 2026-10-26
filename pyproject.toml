@@ -1,0 +1,75 @@
+[project]
+name = "flicker"
+version = "0.1.0"
+requires-python = ">=3.11"
+description = "SpeakQuest AI — gamified speaking practice backend"
+
+dependencies = [
+    # ── Web framework ─────────────────────────────────────────────────────────
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "python-multipart>=0.0.12",   # for audio file uploads
+
+    # ── LangChain core ────────────────────────────────────────────────────────
+    "langchain>=0.3",
+    "langchain-core>=0.3",
+    "langchain-community>=0.3",
+
+    # ── LangGraph ─────────────────────────────────────────────────────────────
+    "langgraph>=0.2",
+
+    # ── LLM providers ─────────────────────────────────────────────────────────
+    "langchain-google-genai>=2.0",  # Gemma via Google AI Studio (primary)
+    "langchain-ollama>=0.2",        # Ollama local fallback
+
+    # ── Speech-to-text ───────────────────────────────────────────────────────
+    "groq>=0.12",
+
+    # ── Database — Supabase ───────────────────────────────────────────────────
+    "supabase>=2.9",
+
+    # ── Validation & config ───────────────────────────────────────────────────
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "pyyaml>=6.0",
+
+    # ── Auth — JWT verification ───────────────────────────────────────────────
+    "python-jose[cryptography]>=3.3",
+
+    # ── HTTP & retry ─────────────────────────────────────────────────────────
+    "httpx>=0.28",
+    "tenacity>=9.0",                # retry with exponential backoff + fallback
+
+    # ── Rate limiting ─────────────────────────────────────────────────────────
+    "slowapi>=0.1",
+
+    # ── Utilities ─────────────────────────────────────────────────────────────
+    "python-dotenv>=1.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.24",
+    "httpx>=0.28",
+    "ruff>=0.8",
+    "mypy>=1.13",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
