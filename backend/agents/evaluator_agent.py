@@ -211,16 +211,6 @@ def load_question_context(state: EvalState) -> EvalState:
         "target_duration": target_duration,
         "actual_duration": actual_duration,
         "expected_concepts": expected_concepts,
-    return {
-        **state,
-        "question": question_text,
-        "topic_id": topic_id,
-        "topic_name": topic_name,
-        "difficulty": difficulty,
-        "question_type": question_type,
-        "target_duration": target_duration,
-        "actual_duration": actual_duration,
-        "expected_concepts": expected_concepts,
         "evaluation_hints": evaluation_hints,
     }
 
