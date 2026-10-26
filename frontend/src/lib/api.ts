@@ -18,6 +18,16 @@ import type {
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8000";
 
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
 async function apiFetch<T>(
   path: string,
   options: RequestInit & { token: string }
@@ -34,7 +44,7 @@ async function apiFetch<T>(
 
   if (!res.ok) {
     const detail = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new Error(detail?.detail ?? `API error ${res.status}`);
+    throw new ApiError(detail?.detail ?? `API error ${res.status}`, res.status);
   }
 
   return res.json() as Promise<T>;
@@ -114,7 +124,10 @@ export async function transcribeAudio(
 
   if (!res.ok) {
     const detail = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new Error(detail?.detail ?? `Transcription error ${res.status}`);
+    throw new ApiError(
+      detail?.detail ?? `Transcription error ${res.status}`,
+      res.status
+    );
   }
 
   return res.json() as Promise<TranscribeResponse>;

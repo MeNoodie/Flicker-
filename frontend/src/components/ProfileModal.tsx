@@ -14,6 +14,8 @@ import type {
 interface ProfileModalProps {
   isOpen: boolean;
   profile: Profile | null;
+  initialName?: string;
+  canClose?: boolean;
   onClose: () => void;
   onSave: (updated: UpsertProfileRequest) => Promise<void>;
 }
@@ -21,55 +23,44 @@ interface ProfileModalProps {
 export function ProfileModal({
   isOpen,
   profile,
+  initialName,
+  canClose = true,
   onClose,
   onSave,
 }: ProfileModalProps) {
   const [userType, setUserType] = useState<UserType>(
     profile?.user_type || "student"
   );
-  const [displayName, setDisplayName] = useState(profile?.display_name || "Alex Chen");
+  const [displayName, setDisplayName] = useState(
+    profile?.display_name || initialName || ""
+  );
   const [domain, setDomain] = useState(
-    profile?.domain || "Distributed Systems & Cloud Architecture"
+    profile?.domain || ""
   );
   const [experienceLevel, setExperienceLevel] = useState<ExperienceLevel>(
-    profile?.experience_level || "intermediate"
+    profile?.experience_level || "beginner"
   );
   const [learningGoal, setLearningGoal] = useState<LearningGoal>(
-    profile?.learning_goal || "interview_preparation"
+    profile?.learning_goal || "concept_clarity"
   );
 
   // Student fields
   const [collegeYear, setCollegeYear] = useState<CollegeYear>(
-    profile?.college_year || "3rd_year"
+    profile?.college_year || "1st_year"
   );
-  const [institutionName, setInstitutionName] = useState(
-    profile?.institution_name || "Stanford University"
-  );
-  const [majorDegree, setMajorDegree] = useState(
-    profile?.major_degree || "Computer Science"
-  );
+  const [institutionName, setInstitutionName] = useState(profile?.institution_name || "");
+  const [majorDegree, setMajorDegree] = useState(profile?.major_degree || "");
 
   // Professional fields
   const [yearsOfExperience, setYearsOfExperience] = useState<number>(
-    profile?.years_of_experience ?? 3
+    profile?.years_of_experience ?? 0
   );
-  const [currentRole, setCurrentRole] = useState(
-    profile?.current_role || "Backend Software Engineer"
-  );
-  const [targetRole, setTargetRole] = useState(
-    profile?.target_role || "Senior Staff Distributed Systems Engineer"
-  );
+  const [currentRole, setCurrentRole] = useState(profile?.current_role || "");
+  const [targetRole, setTargetRole] = useState(profile?.target_role || "");
 
   // Custom topics
   const [topics, setTopics] = useState<Topic[]>(
-    profile?.topics && profile.topics.length > 0
-      ? profile.topics
-      : [
-          { topic_name: "CAP Theorem & PACELC Tradeoffs", difficulty: "intermediate", is_active: true },
-          { topic_name: "Raft Consensus Algorithm", difficulty: "advanced", is_active: true },
-          { topic_name: "Distributed Caching & Invalidation", difficulty: "intermediate", is_active: true },
-          { topic_name: "Database Sharding & Partitioning", difficulty: "advanced", is_active: true },
-        ]
+    profile?.topics ?? []
   );
   const [newTopicName, setNewTopicName] = useState("");
   const [newTopicDifficulty, setNewTopicDifficulty] =
@@ -99,6 +90,10 @@ export function ProfileModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (topics.length === 0) {
+      setError("Add at least one topic so we can personalize your practice.");
+      return;
+    }
     setSaving(true);
     setError(null);
 
@@ -145,12 +140,15 @@ export function ProfileModal({
               Customize your persona and topics. The Question Generation Agent calibrates its questions directly to these settings.
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-zinc-800 transition"
-          >
-            ✕
-          </button>
+          {canClose && (
+            <button
+              onClick={onClose}
+              className="text-zinc-400 hover:text-white p-2 rounded-xl hover:bg-zinc-800 transition"
+              aria-label="Close profile editor"
+            >
+              ✕
+            </button>
+          )}
         </div>
 
         {error && (
@@ -427,14 +425,16 @@ export function ProfileModal({
 
           {/* Action buttons */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-800">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={saving}
-              className="px-5 py-2.5 rounded-xl border border-zinc-800 text-zinc-400 hover:text-white text-sm font-semibold transition"
-            >
-              Cancel
-            </button>
+            {canClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                disabled={saving}
+                className="px-5 py-2.5 rounded-xl border border-zinc-800 text-zinc-400 hover:text-white text-sm font-semibold transition"
+              >
+                Cancel
+              </button>
+            )}
             <button
               type="submit"
               disabled={saving}
@@ -446,7 +446,7 @@ export function ProfileModal({
                   Saving...
                 </>
               ) : (
-                "Save & Regenerate Questions"
+                "Save & Continue"
               )}
             </button>
           </div>
